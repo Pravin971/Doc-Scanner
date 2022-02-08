@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-#import stackImg
+import stackImg
 
 imgWidth = 640
 imgHeight = 480
@@ -75,12 +75,17 @@ while True:
     imgContour = frame.copy()
     imgThres = preProcess(frame)
     biggest = getContours(imgThres)
-    imgWarp = getWarp(frame, biggest)
+    imgWarp = np.zeros((imgWidth,imgHeight,3))
+    if biggest.size != 0:
+        imgWarp = getWarp(frame, biggest)
+        imgArray = ([frame, imgThres],[imgContour, imgWarp])
+    else:
+        imgArray = ([frame, imgThres],[frame, frame])
     
+    stacked = stackImg.stackImages(0.7, imgArray)
+    cv2.imshow("Warped", imgWarp)
+    cv2.imshow("WorkFlow", stacked)
     
-    
-    cv2.imshow("Video", imgWarp)
-    cv2.imshow("Video1", imgContour)
     if cv2.waitKey(10) & 0xFF == ord("q"):
         break
 
